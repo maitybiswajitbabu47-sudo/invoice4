@@ -1,144 +1,55 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>স্টার মাইতি মোবাইল - স্মার্ট ইনভয়েস</title>
+    <title>স্টার মাইতি মোবাইল - ইনভয়েস</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap');
-        body { font-family: 'Noto Sans Bengali', sans-serif; background: #f0f2f5; padding: 20px; }
+        body { font-family: 'Arial', sans-serif; padding: 20px; }
         .invoice-box {
-            max-width: 800px; margin: auto; padding: 30px; 
-            background: white; border-radius: 8px; position: relative;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden;
+            max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee;
+            position: relative; overflow: hidden; background: #fff;
         }
         .watermark {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            opacity: 0.05; width: 350px; pointer-events: none; z-index: 0;
+            position: absolute; top: 30%; left: 25%; opacity: 0.1;
+            transform: rotate(-30deg); width: 300px; z-index: 0;
         }
-        .header { text-align: center; border-bottom: 3px solid #000080; padding-bottom: 10px; margin-bottom: 20px; position: relative; z-index: 1; }
-        .header h1 { color: #d32f2f; margin: 0; font-size: 32px; }
-        .details { display: flex; justify-content: space-between; margin-bottom: 20px; z-index: 1; position: relative; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; z-index: 1; position: relative; }
-        th { background: #000080; color: white; padding: 12px; border: 1px solid #ddd; }
-        td { padding: 10px; border: 1px solid #ddd; text-align: center; }
-        input { border: 1px solid #ccc; padding: 5px; border-radius: 3px; width: 90%; font-family: inherit; }
-        .total-area { text-align: right; margin-top: 20px; font-size: 22px; font-weight: bold; color: #000080; }
-        
-        /* QR Code Section */
-        .payment-qr { text-align: left; margin-top: 20px; }
-        .qr-box { border: 1px solid #ddd; padding: 10px; display: inline-block; text-align: center; border-radius: 5px; }
-        .qr-box img { width: 120px; height: 120px; }
-
-        .footer-sign { margin-top: 40px; display: flex; justify-content: space-between; font-weight: bold; }
-        .btn { padding: 10px 20px; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; color: white; transition: 0.3s; }
-        .btn-add { background: #28a745; margin-top: 10px; }
-        .btn-print { background: #000080; width: 100%; font-size: 18px; margin-top: 25px; }
-        
-        @media print { 
-            .no-print { display: none; } 
-            body { background: white; padding: 0; }
-            .invoice-box { box-shadow: none; border: none; max-width: 100%; } 
-            input { border: none; background: transparent; }
-            table.items th { background: #000080 !important; color: white !important; -webkit-print-color-adjust: exact; }
-        }
+        .content { position: relative; z-index: 1; }
+        .header { text-align: center; color: #d32f2f; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        table td, table th { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .btn-print { background: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; display: block; margin: 20px auto; }
+        @media print { .btn-print { display: none; } }
     </style>
 </head>
 <body>
 
-<div class="invoice-box">
-    <svg class="watermark" viewBox="0 0 24 24" fill="black"><path d="M17 1.01L7 1C5.9 1 5 1.9 5 3V21C5 22.1 5.9 23 7 23H17C18.1 23 19 22.1 19 21V3C19 1.9 18.1 1.01 17 1.01ZM17 19H7V5H17V19Z"/></svg>
-
-    <div class="header">
-        <h1>স্টার মাইতি মোবাইল</h1>
-        <p>মোহনপুর, পশ্চিম মেদিনীপুর (শ্যামবাগ জুনিয়র হাই স্কুলের সামনে)</p>
-        <p>📞 8768465371, 8927895736</p>
-    </div>
-
-    <div class="details">
-        <div>
-            <strong>ক্রেতার নাম:</strong> <input type="text" placeholder="নাম লিখুন"><br><br>
-            <strong>মোবাইল:</strong> <input type="text" placeholder="নম্বর">
+<div class="invoice-box" id="print-area">
+    <img src="https://img.icons8.com/ios/500/iphone.png" class="watermark">
+    <div class="content">
+        <div class="header">
+            <h2>স্টার মাইতি মোবাইল</h2>
+            <p>মোহনপুর, পশ্চিম মেদিনীপুর (শ্যামবাগ জুনিয়র হাই স্কুলের সামনে)</p>
+            <p>ফোন: 8768465371, 8927895736</p>
         </div>
-        <div style="text-align: right;">
-            <strong>তারিখ:</strong> <input type="date" id="date"><br><br>
-            <strong>বিল নং:</strong> <input type="text" value="SMM-101" style="width: 80px; text-align: right;">
-        </div>
-    </div>
-
-    <table id="billTable">
-        <thead>
-            <tr>
-                <th>পণ্যের বিবরণ (Model/IMEI)</th>
-                <th>দাম (Price)</th>
-                <th>পরিমাণ</th>
-                <th>মোট</th>
-                <th class="no-print">মুছুন</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-
-    <button class="btn btn-add no-print" onclick="addRow()">+ নতুন আইটেম যোগ করুন</button>
-
-    <div class="total-area">সর্বমোট টাকা: ₹ <span id="grandTotal">0</span> /-</div>
-
-    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-        <div class="payment-qr">
-            <div class="qr-box">
-                <p style="margin: 0 0 5px 0; font-size: 12px;">স্ক্যান করে পেমেন্ট করুন</p>
-                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=8768465371@ybl&pn=Star Maity Mobile&cu=INR" alt="QR Code">
-                <p style="margin: 5px 0 0 0; font-size: 11px; font-weight: bold;">UPI ID: 8768465371@ybl</p>
-            </div>
-        </div>
-
-        <div class="footer-sign">
-            <div style="text-align: center;">
-                <p>___________________</p>
-                <p>মালিকের স্বাক্ষর</p>
-            </div>
+        <hr>
+        <p><strong>ক্রেতার নাম:</strong> <span contenteditable="true">......................</span></p>
+        <table>
+            <thead>
+                <tr><th>বিবরণ</th><th>পরিমাণ</th><th>টাকা</th></tr>
+            </thead>
+            <tbody>
+                <tr><td contenteditable="true">মোবাইল/সার্ভিস</td><td contenteditable="true">1</td><td contenteditable="true">00</td></tr>
+                <tr><td colspan="2" style="text-align:right"><strong>মোট:</strong></td><td contenteditable="true">00</td></tr>
+            </tbody>
+        </table>
+        <div style="margin-top: 20px; text-align: right;">
+            <p>পেমেন্ট করুন:</p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=upi://pay?pa=8768465371@upi" width="100">
         </div>
     </div>
 </div>
 
-<button class="btn btn-print no-print" onclick="window.print()">PDF ডাউনলোড বা প্রিন্ট করুন</button>
+<button class="btn-print" onclick="window.print()">বিলের PDF ডাউনলোড করুন</button>
 
-<script>
-    document.getElementById('date').valueAsDate = new Date();
-
-    function addRow() {
-        const tbody = document.querySelector('#billTable tbody');
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><input type="text" placeholder="যেমন: Vivo V29 (IMEI...)"></td>
-            <td><input type="number" class="p" oninput="updateTotal()" placeholder="0"></td>
-            <td><input type="number" class="q" oninput="updateTotal()" value="1"></td>
-            <td class="r">0</td>
-            <td class="no-print"><button onclick="this.parentElement.parentElement.remove();updateTotal()" style="background:#ff4d4d; color:white; border:none; border-radius:3px; padding: 5px 10px; cursor:pointer">X</button></td>
-        `;
-        tbody.appendChild(tr);
-    }
-
-    function updateTotal() {
-        let grandTotal = 0;
-        document.querySelectorAll('#billTable tbody tr').forEach(row => {
-            const price = parseFloat(row.querySelector('.p').value) || 0;
-            const qty = parseFloat(row.querySelector('.q').value) || 0;
-            const rowSum = price * qty;
-            row.querySelector('.r').innerText = rowSum;
-            grandTotal += rowSum;
-        });
-        document.getElementById('grandTotal').innerText = grandTotal;
-        
-        // QR কোড আপডেট (টাকার পরিমাণ সহ)
-        const upiId = "8768465371@ybl"; // আপনার আসল UPI ID এখানে দিন
-        const name = "Star Maity Mobile";
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${upiId}&pn=${name}&am=${grandTotal}&cu=INR`;
-        document.getElementById('qrImage').src = qrUrl;
-    }
-
-    // শুরুতে একটি খালি রো যোগ করা
-    addRow();
-</script>
 </body>
 </html>
